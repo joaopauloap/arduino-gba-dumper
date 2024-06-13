@@ -1,7 +1,7 @@
 //cartridge pins
 int RD = 4;   //control bit
 int CS2 = 2;  //switch ROM/RAM
-int CS = 3;   //switch Address/Data
+int CS = 3;   //switch Address/Data for ROM
 //int WR = 5;   //Write strobe
 
 //shift register 74HC595 pins
@@ -47,10 +47,13 @@ unsigned int readRAMDataBus() {
 }
 
 void printByte(int value) {
-  // char buffer[3];
-  // sprintf(buffer, "%02X", value);
-  // Serial.print(buffer);
-  // Serial.print(" ");
+  char buffer[3];
+  sprintf(buffer, "%02X", value);
+  Serial.print(buffer);
+  Serial.print(" ");
+}
+
+void sendByte(int value) {
   Serial.write(value);
 }
 
@@ -67,12 +70,11 @@ void dumpSave() {
     delayMicroseconds(10);
     digitalWrite(RD, HIGH);
 
-    int b = readRAMDataBus();
-
     if (addr % 32 == 0) {
       Serial.println("");
     }
-    printByte(b);
+    //printByte(readRAMDataBus());
+    sendByte(readRAMDataBus());
   }
 
   digitalWrite(CS2, HIGH);
@@ -81,8 +83,7 @@ void dumpSave() {
 
 
 void loop() {
-  while (Serial.available() == 0)
-    ;
+  while (Serial.available() == 0);
   char op = Serial.read();
   if (op == '2') {
     dumpSave();
