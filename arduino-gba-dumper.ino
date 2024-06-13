@@ -53,11 +53,6 @@ void printByte(int value) {
   Serial.print(" ");
 }
 
-void sendByte(int value) {
-  Serial.write(value);
-}
-
-
 void dumpSave() {
   // Serial.println("Dumping GBA Save...");
   digitalWrite(CS2, LOW);
@@ -70,11 +65,12 @@ void dumpSave() {
     delayMicroseconds(10);
     digitalWrite(RD, HIGH);
 
-    if (addr % 32 == 0) {
-      Serial.println("");
-    }
+    // if (addr % 32 == 0) {
+    //   Serial.println("");
+    // }
     //printByte(readRAMDataBus());
-    sendByte(readRAMDataBus());
+    int b = readRAMDataBus();
+    Serial.write(b);
   }
 
   digitalWrite(CS2, HIGH);
@@ -83,7 +79,8 @@ void dumpSave() {
 
 
 void loop() {
-  while (Serial.available() == 0);
+  while (Serial.available() == 0)
+    ;
   char op = Serial.read();
   if (op == '2') {
     dumpSave();
