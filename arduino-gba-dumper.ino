@@ -33,16 +33,16 @@ void setup() {
 void latchRAMAddress(unsigned int addr) {
   digitalWrite(LATCH, LOW);
   shiftOut(DATA, CLOCK, MSBFIRST, addr >> 8);
-  shiftOut(DATA, CLOCK, MSBFIRST, addr);
+  shiftOut(DATA, CLOCK, MSBFIRST, addr & 0xFF);
   digitalWrite(LATCH, HIGH);
 }
 
 
 
 unsigned int readRAMDataBus() {
-  uint8_t portd_bits = ~PIND & 0b11100000;
+  uint8_t portd_bits = PIND & 0b11100000;
   portd_bits >>= 5;
-  uint8_t portb_bits = ~PINB & 0b00011111;
+  uint8_t portb_bits = PINB & 0b00011111;
   return (portb_bits << 3) | portd_bits;
 }
 
@@ -58,11 +58,11 @@ void dumpSave() {
   digitalWrite(CS2, LOW);
   delay(100);
 
-  for (unsigned int addr = 0x00; addr < 0xFFFF; addr++) {
+  for (unsigned int addr = 0x00; addr < 0x1FFF; addr++) {
 
     latchRAMAddress(addr);
     digitalWrite(RD, LOW);
-    delayMicroseconds(10);
+    delayMicroseconds(5);
     digitalWrite(RD, HIGH);
 
     // if (addr % 32 == 0) {
@@ -79,8 +79,7 @@ void dumpSave() {
 
 
 void loop() {
-  while (Serial.available() == 0)
-    ;
+  while (Serial.available() == 0);
   char op = Serial.read();
   if (op == '2') {
     dumpSave();

@@ -26,6 +26,7 @@ def receiveDump(isCreateFile):
     try:
         while True:
             byte = ser.read()
+            print(byte.hex())
             if byte:
                 if isCreateFile:
                     file.write(byte)  
