@@ -93,7 +93,7 @@ while True:
         #dump_rom()
         print("")
     elif op == '2':
-        dumpTimeout = 5   
+        dumpTimeout = 2   
         dump_ram()
     elif op == '3':
        #write_ram()

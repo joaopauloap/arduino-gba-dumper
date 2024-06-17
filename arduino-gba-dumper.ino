@@ -1,49 +1,45 @@
 //cartridge pins
-int RD = 4;   //control bit
-int CS2 = 2;  //switch ROM/RAM
-int CS = 3;   //switch Address/Data for ROM
-//int WR = 5;   //Write strobe
+int WR = A3;   //Write strobe
+int RD = A2;   //control bit
+int CS = A1;   //switch Address/Data for ROM
+int CS2 = A0;  //switch ROM/RAM
 
 //shift register 74HC595 pins
-int CLOCK = A0;
-int LATCH = A1;
-int DATA = A2;
+int CLOCK = 10;
+int DATA = 11;
+int LATCH = 12;
 
 void setup() {
   Serial.begin(9600);
-  pinMode(CLOCK, OUTPUT);
-  pinMode(LATCH, OUTPUT);
-  pinMode(DATA, OUTPUT);
   pinMode(RD, OUTPUT);
   pinMode(CS, OUTPUT);
   pinMode(CS2, OUTPUT);
-  //pinMode(WR, OUTPUT);
+  pinMode(WR, OUTPUT);
+  pinMode(CLOCK, OUTPUT);
+  pinMode(LATCH, OUTPUT);
+  pinMode(DATA, OUTPUT);
 
   //Data bus
-  for (int pin = 5; pin <= 12; pin++) {
+  for (int pin = 2; pin <= 9; pin++) {
     pinMode(pin, INPUT_PULLUP);
   }
 
   digitalWrite(RD, HIGH);
   digitalWrite(CS, HIGH);
   digitalWrite(CS2, HIGH);
-  //digitalWrite(WR, HIGH);
+  digitalWrite(WR, HIGH);
 }
 
-void latchRAMAddress(unsigned int addr) {
+void latchAddress(unsigned int addr) {
   digitalWrite(LATCH, LOW);
-  shiftOut(DATA, CLOCK, MSBFIRST, addr >> 8);
-  shiftOut(DATA, CLOCK, MSBFIRST, addr & 0xFF);
+  shiftOut(DATA, CLOCK, MSBFIRST, (addr >> 8));
+  shiftOut(DATA, CLOCK, MSBFIRST, addr);
   digitalWrite(LATCH, HIGH);
 }
 
 
-
-unsigned int readRAMDataBus() {
-  uint8_t portd_bits = PIND & 0b11100000;
-  portd_bits >>= 5;
-  uint8_t portb_bits = PINB & 0b00011111;
-  return (portb_bits << 3) | portd_bits;
+unsigned int readDataBus() {
+  return ((PINB & 0b00000011) << 6) | ((PIND & 0b11111100) >> 2);
 }
 
 void printByte(int value) {
@@ -55,31 +51,24 @@ void printByte(int value) {
 
 void dumpSave() {
   // Serial.println("Dumping GBA Save...");
+  //digitalWrite(CS, HIGH);  //Disable ROM
   digitalWrite(CS2, LOW);
   delay(100);
 
   for (unsigned int addr = 0x00; addr < 0x1FFF; addr++) {
-
-    latchRAMAddress(addr);
+    latchAddress(addr);
     digitalWrite(RD, LOW);
-    delayMicroseconds(5);
+    delayMicroseconds(10);
     digitalWrite(RD, HIGH);
-
-    // if (addr % 32 == 0) {
-    //   Serial.println("");
-    // }
-    //printByte(readRAMDataBus());
-    int b = readRAMDataBus();
+    int b = readDataBus();
     Serial.write(b);
   }
-
   digitalWrite(CS2, HIGH);
 }
 
 
 
 void loop() {
-  while (Serial.available() == 0);
   char op = Serial.read();
   if (op == '2') {
     dumpSave();
