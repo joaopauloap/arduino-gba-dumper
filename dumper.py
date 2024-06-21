@@ -20,7 +20,7 @@ def receiveDump(isCreateFile):
 
     if isCreateFile:
         print('Dumping, please await...')
-        fileName = 'dump.txt'
+        fileName = 'dump.sav'
         file = open(fileName, 'wb')
 
     try:

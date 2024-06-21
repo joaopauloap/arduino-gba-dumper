@@ -1,3 +1,5 @@
+#define RAM_SIZE 128  //for 128kb ram
+
 //cartridge pins
 int WR = A3;   //Write strobe
 int RD = A2;   //control bit
@@ -30,7 +32,7 @@ void setup() {
   digitalWrite(WR, HIGH);
 }
 
-void latchAddress(unsigned int addr) {
+void latchAddress(unsigned long addr) {
   digitalWrite(LATCH, LOW);
   shiftOut(DATA, CLOCK, MSBFIRST, (addr >> 8));
   shiftOut(DATA, CLOCK, MSBFIRST, addr);
@@ -49,16 +51,17 @@ void printByte(int value) {
   Serial.print(" ");
 }
 
-void dumpSave() {
+void dumpSave(int size) {
   // Serial.println("Dumping GBA Save...");
-  //digitalWrite(CS, HIGH);  //Disable ROM
+  unsigned long lastAddr = (unsigned long) size * 1024;
+  digitalWrite(CS, HIGH);  //Disable ROM
   digitalWrite(CS2, LOW);
   delay(100);
 
-  for (unsigned int addr = 0x00; addr < 0x1FFF; addr++) {
+  for (unsigned long addr = 0; addr < lastAddr; addr++) {
     latchAddress(addr);
     digitalWrite(RD, LOW);
-    delayMicroseconds(10);
+    delayMicroseconds(1);
     digitalWrite(RD, HIGH);
     int b = readDataBus();
     Serial.write(b);
@@ -69,9 +72,12 @@ void dumpSave() {
 
 
 void loop() {
-  char op = Serial.read();
-  if (op == '2') {
-    dumpSave();
-    // Serial.println("END OF DUMP");
+  if (Serial.available() > 0) {
+    char op = Serial.read();
+
+    //Dump save option
+    if (op == '2') {
+      dumpSave(128);
+    }
   }
 }
