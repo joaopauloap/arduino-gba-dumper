@@ -1,7 +1,7 @@
 import serial
 import time
 
-port = 'COM3' 
+port = 'COM7' 
 baudrate = 9600
 timeout = 1 
 dumpTimeout = 2 
@@ -87,13 +87,10 @@ while True:
     op = input("\n>")
     
     if op == '0':
-        dumpTimeout = 2
         #print_game_title()
     elif op == '1':
-        #dump_rom()
-        print("")
+        dump_rom()
     elif op == '2':
-        dumpTimeout = 2   
         dump_ram()
     elif op == '3':
        #write_ram()
