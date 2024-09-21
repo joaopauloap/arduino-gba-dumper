@@ -32,15 +32,15 @@ I said almost sequential because, from what I understood from the pdf, the last 
 To read the data, only the first 16 bits are used (0...7 + 8...16). So here I will only need 16 IO pins or change my shift registers to a bidirectional type (research about MCP23017).
 
 Arduino nano:
- 14 Digital IO ports - 2 ports for serial = 12 IO's
- 8 Analog (but just 6 can be IO's)
+- 14 Digital IO ports - 2 ports for serial = 12 IO's
+- 8 Analog (but just 6 can be IO's)
 Total available: 18 IO's and 2 Outputs
 
 Perfect GBA Dumper:
- Address/Data Bus: 24 IO's
- CS, CS2, RD pins: 3 Outputs
+- Address/Data Bus: 24 IO's
+- CS, CS2, RD pins: 3 Outputs
 
 GBA Dumper for reading ROM:
- Data Bus: 16 Inputs
- Last address byte: 8 outputs
- CS, CS2, RD pins: 3 Outputs
+- Data Bus: 16 Inputs
+- Last address byte: 8 outputs
+- CS, CS2, RD pins: 3 Outputs
