@@ -1,14 +1,12 @@
 <H1>Simple GBA Cart Dumper - WIP</H1>
 
-Theoretically, this project only dumps saves from SRAM and maybe EEPROM memories (and I say theoretically because I haven't tested it on original GBA cartridges, I only have Chinese bootlegs that work differently. Here's a short explanation from user NickMotionless that I found on reddit:
+Theoretically, this project dumps save data from original GBA Cartridges and bootlegs with dedicated memory chip for save data (SRAM, EEPROM and maybe FLASH). I say theoretically because I haven't tested it on original cartridges yet, I only have Chinese bootlegs that works differently. Most of these new chinese bootlegs now use a modified ROM to use a single FRAM/FLASH memory chip on the bootleg's PCB, holding both the game and the save data. This mod is called "batteryless save patch". That's why the cartridge is cheaper.
 
-"Most of these cheap Chinese bootlegs now use a ROM patched to use a FRAM/ flash memory chip on the bootleg's PCB... and it holds the save game data without the need for a battery."
-
-So I wasn't able to dump them with this project, but I have been able to successfully dump the 369 in 1 multicart cartridge (when dealing with this multicart, it's always necessary to start the game on a console before dumping). I believe that only this cartridge uses a different memory scheme than the other bootlegs I have.
+So I wasn't able to dump the new chinese bootlegs with this project yet, because they need ROM dumping, but I have been able to successfully dump the "369 in 1 multicart cartridge (when dealing with this multicart, it's always necessary to start the game on a console before dumping). I believe that only this cartridge uses a different memory scheme than the other bootlegs i have.
 
 Tip: In case someone needs to dump the save on these bootleg cartridges that use FRAM memory, I was able to dump the Pokemon Fire Red save using a Nintendo DS and making a dump of its complete ROM (it's weird, but the save bytes will be there, so you just need to use a program that extracts the save from inside the ROM). Here's a guide: https://www.reddit.com/r/GameboyAdvance/comments/16mdvl7/guide_to_extracting_save_file_from/
 
-Since not everyone has a Nintendo DS, I want to update my Arduino project to read ROM as well, but it has a design problem. It turns out that the shift registers I'm using, 74hc595, are unidirectional, and together with the few ports on the Arduino Nano, I'm in a tight spot. The ideal option for this type of project is an Arduino Mega, which has a lot of ports.
+Since not everyone has a Nintendo DS, I want to update my Arduino project to dump ROM as well, but it has a design problem. It turns out that the shift registers I'm using, 74hc595, are unidirectional, and together with the few ports on the Arduino Nano, I'm in a tight spot. The ideal option for this type of project is an Arduino Mega, which has a lot of ports.
 
 
 ![Protoboard Circuit](./protoboard_circuit.png)
@@ -16,14 +14,14 @@ Since not everyone has a Nintendo DS, I want to update my Arduino project to rea
 
 
 I'll leave some ideas here so I don't forget :D
-These are future changes I plan to make.
+These are future changes I plan to make: ROM DUMPING
 
 Interpreting from signal_diagrams.pdf: Reading ROM
 
 Here the cartridge's bit bus (24 bits) is divided into 3:
-bits 0...7
-bits 8...15
-bits 16...23
+- bits 0...7
+- bits 8...15
+- bits 16...23
 
 Unlike the RAM reading mode, where I need to keep latching the addresses (I think this is called non-sequential access), here the access is almost 100% sequential. I only need to set the initial address 0x00 with the latch being done on the falling edge of CS. Then I just need to keep pulsing the RD and the 16 bits of data are received (the addresses are incremented internally in the chip).
 
