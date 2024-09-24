@@ -6,7 +6,7 @@
 | SAVE DUMPING |     OK*    |
 |  SAVE FLASH  |      -     |
 
-*Theoretically, this project dumps the save data from original GBA Cartridges and bootlegs with dedicated memory chip for save data (SRAM, EEPROM and maybe FLASH). I say theoretically because I haven't tested it on original cartridges yet, I only have Chinese bootlegs that works differently. Most of these new chinese bootlegs now use a modified ROM to use a single FRAM/FLASH memory chip on the bootleg's PCB, holding both the game and the save data. This mod is called "batteryless save ROM patch". That's why the cartridge is cheaper.
+*Theoretically, this project dumps the save data from original GBA Cartridges and bootlegs with dedicated chip for save data (SRAM, EEPROM and maybe FLASH). I say theoretically because I haven't tested it on original cartridges yet, I only have Chinese bootlegs that works differently. Most of these new chinese bootlegs now use a modified ROM to use a single FRAM/FLASH memory chip on the bootleg's PCB, holding both the game and the save data. This mod is called "batteryless save ROM patch". That's why the cartridge is cheaper.
 So I wasn't able to dump the new chinese bootlegs with this project yet, because they need ROM dumping, but I have been able to successfully dump the save of pokemon FR in a "369 in 1" multicart cartridge (when dealing with this multicart, it's always necessary to start the game on a console before dumping). My guess is that this cartridge uses dedicated memory to save data.
 
 Tip: For those who wants to dump the save from these "ROM patched" bootleg cartridges, I was able to dump the bootleg save using a Nintendo DS + R4 card with the GBABF tool. Just dump the entire ROM, the save data bytes will be there, you just need extract these bytes using a hex editor or with a program for that. You can also write back the save data to the bootleg. See: https://www.reddit.com/r/GameboyAdvance/comments/16mdvl7/guide_to_extracting_save_file_from/
@@ -47,3 +47,14 @@ GBA Dumper for reading ROM:
 - Data Bus: 16 Inputs
 - Last address byte: 8 outputs
 - CS, CS2, RD pins: 3 Outputs
+
+![Game Cartridge PCB](./pcb_pinout.png)
+
+
+"GBA ROMs are special chips that contain a standard ROM, address latches, and address counters all on one chip. Cart accesses can be either sequential or non-sequential. The first access to a random cart ROM location must be non-sequential. This type of access is done by putting the lower 16 bits of the ROM address on cart lines AD0-AD15 and setting /CS low to latch address lines A0-A15. Then /RD is strobed low to read 16 bits of data from that ROM location. (Data is valid on the rising edge of /RD.) The following sequential ROM location(s) can be read by again strobing /RD low. Sequential ROM access does not require doing another /CS high-to-low transitions because there are count up registers in the cart ROM chip that keep track of the next ROM location to read. Address increment occurs on the low-to-high edge of all /RD. In theory, you can read an entire GBA ROM with just one non-sequential read (address 0) and all of the other reads as sequential so address counters must be used on most address lines to exactly emulate a GBA ROM. However, you only need to use address latch / counters on A0-A15 in order to satisfy the GBA since A16-A23 are always accurate."
+
+References:
+- https://problemkaputt.de/gbatek-gba-memory-map.htm
+- https://reinerziegler.de.mirrors.gg8.se/GBA/gba.htm
+- https://douevenknow.us/post/68126856498/arduino-based-gba-rom-dumper-part-1/embed
+- https://github.com/shinyquagsire23/GBA-GB-ROMDumper
