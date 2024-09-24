@@ -1,10 +1,39 @@
-import serial
+import serial #requires pySerial
+import serial.tools.list_ports
 import time
 
-port = 'COM3' 
 baudrate = 9600
 timeout = 1 
 dumpTimeout = 2 
+
+def list_serial_ports():
+    ports = serial.tools.list_ports.comports()
+    available_ports = [port.device for port in ports]
+    if available_ports:
+        print("Available Serial Ports:")
+        for i, port in enumerate(available_ports):
+            print(f"{i}: {port}")
+        return available_ports
+    else:
+        print("No serial ports found.")
+        return []
+
+def select_serial_port(available_ports):
+    while True:
+        try:
+            index = int(input("Select port by index: "))
+            if 0 <= index < len(available_ports):
+                return available_ports[index]
+            else:
+                print("Invalid index, try again.")
+        except ValueError:
+            print("Please enter a valid number.")
+
+ports = list_serial_ports()
+if not ports:
+    exit()
+
+port = select_serial_port(ports)
 
 # Conexão serial
 try:
@@ -48,7 +77,6 @@ def receiveDump(isCreateFile):
 
 def print_game_title():
     try:
-        print('Getting game title...')
         ser.write(b'0')
     except serial.SerialException as e:
         print(f'Error: {e}')
@@ -74,9 +102,7 @@ def dump_ram():
         exit()
     receiveDump(True)
 
-def write_ram():
-    print("WIP")
-
+# Loop principal
 while True:
     print(f"\n=== GBA Game Dumper ({port}) ===")
     print("0 - Print game title")
@@ -84,21 +110,18 @@ while True:
     print("2 - Dump RAM")
     print("3 - Write RAM")
     print("4 - Exit")
-    op = input("\n>")
+    op = input("\n> ")
     
     if op == '0':
-        dumpTimeout = 2
         #print_game_title()
+        print('wip')
     elif op == '1':
-        #dump_rom()
-        print("")
+        dump_rom()
     elif op == '2':
-        dumpTimeout = 2   
         dump_ram()
     elif op == '3':
-       #write_ram()
-       print("")
+        print('wip')
     elif op == '4':
         break
     else:
-        print("Invalid op.")
+        print("Invalid option.")
